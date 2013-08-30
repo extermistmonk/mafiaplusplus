@@ -1,105 +1,186 @@
 package com.sc2mafia.mafia;
 
-import java.util.ArrayList;
+import org.mozilla.javascript.*;
 
 public class Player {
 
-    Role role;
-    ArrayList<Player> killers = new ArrayList<Player>();
-    ArrayList<Player> visitors = new ArrayList<Player>();
-    Player[] targets;
-    Player vote;
-    int health = 0;
-    int voteWeight = 1;
-    boolean alive = true;
-    boolean roleblocked = false;
+    String script;
+    Context cx;
+    Scriptable scope;
 
-    public Player(Role role) {
-	this.role = role;
-	targets = new Player[role.getNumberOfTargets()];
+    public Player(String script) {
+	this.script = script;
     }
 
-    public void attack(Player attacker, Game game) {
-	role.attack(this, attacker, game);
-    }
-    
-    public void heal(Player healer, Game game) {
-	role.heal(this, healer, game);
-    }
-    
-    void lynched(Game game) {
-	role.lynched(this, game);
-    }
-
-    void dayStart(Game game) {
-	this.vote = null;
-	role.dayStart(this, game);
-    }
-
-    void dayEnd(Game game) {
-	role.dayEnd(this, game);
-    }
-
-    void nightStart(Game game) {
-	this.vote = null;
-	this.targets = new Player[role.getNumberOfTargets()];
-	role.nightStart(this, game);
-    }
-
-    void nightEnd(Game game) {
-	role.nightEnd(this, game);
-    }
-
-    void roleblocked(Player roleblocker, Game game) {
-    }
-    
-    public void setTargets(Player[] targets) {
-	if (targets.length > role.getNumberOfTargets()) {
-	    throw new IndexOutOfBoundsException();
+    void initRole(Context cx) {
+	this.cx = cx;
+	this.scope = cx.initStandardObjects();
+	this.cx.evaluateString(scope, script, "RoleScript", 1, null);
+	Object fObj = scope.get("init", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
 	}
-	this.targets = targets;
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{this});
     }
     
-    public Player[] getTargets() {
-	return targets;
+    public String getRoleName() {
+	return (String) scope.get("roleName", scope);
     }
 
-    public Player[] chatTargets(Game game) {
-	if (alive) {
-	    if (game.day) {
-		return game.players;
-	    }
-	    return role.chatTargets(this, game);
-	}
-	return game.getDeadPlayers();
+    public String getAlignment() {
+	return (String) scope.get("alignment", scope);
     }
 
     public boolean isAlive() {
-	return alive;
+	Function f = (Function) scope.get("isAlive", scope);
+	return (Boolean)f.call(cx, scope, scope, new Object[]{});
     }
 
+    public int getPriority() {
+	Function f = (Function) scope.get("getPriority", scope);
+	return ((Double)f.call(cx, scope, scope, new Object[]{})).intValue();
+    }
+
+    void dayStart(Game game) {
+	Object fObj = scope.get("dayStart", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{game});
+    }
+
+    void dayEnd(Game game) {
+	Object fObj = scope.get("dayEnd", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{game});
+    }
+
+    void nightStart(Game game) {
+	Object fObj = scope.get("nightStart", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{game});
+    }
+
+    void nightEnd(Game game) {
+	Object fObj = scope.get("nightEnd", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{game});
+    }
+
+    public void attack(Player attacker, Game game) {
+	Object fObj = scope.get("attack", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{attacker, game});
+    }
+
+    public void heal(Player healer, Game game) {
+	Object fObj = scope.get("heal", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{healer, game});
+    }
+
+    void lynched(Game game) {
+	Object fObj = scope.get("lynched", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{game});
+    }
+
+    void roleblocked(Player roleblocker, Game game) {
+	Object fObj = scope.get("roleblocked", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{roleblocker, game});
+    }
+
+    public Player[] getTargets() {
+	Function f = (Function) scope.get("getTargets", scope);
+	NativeArray result = (NativeArray)f.call(cx, scope, scope, new Object[]{});
+	Player[] returnArray = new Player[(int) result.getLength()];
+	for (Object o : result.getIds()) {
+	    int index = (Integer) o;
+	    returnArray[index] = (Player) result.get(index);
+	}
+	return returnArray;
+    }
+    
+    public void setTargets(Player[] targets) {
+	Object fObj = scope.get("setTargets", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{});
+    }
+
+    public void handleMessage(Message message, Game game) {
+	Object fObj = scope.get("handleMessage", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{message, game});
+    }
+    
     public Player[] getKillers() {
-	return killers.toArray(new Player[killers.size()]);
-    }
-    
-    public void addKiller(Player killer) {
-	killers.add(killer);
-    }
-    
-    public void removeKiller(Player killer) {
-	killers.remove(killer);
-    }
-    
-    public void removeFirstKiller() {
-	killers.remove(0);
+	Function f = (Function) scope.get("getKillers", scope);
+	NativeArray result = (NativeArray)f.call(cx, scope, scope, new Object[]{});
+	Player[] returnArray = new Player[(int) result.getLength()];
+	for (Object o : result.getIds()) {
+	    int index = (Integer) o;
+	    returnArray[index] = (Player) result.get(index);
+	}
+	return returnArray;
     }
 
-    public Player[] getVisitors() {
-	return visitors.toArray(new Player[visitors.size()]);
+    public void setLynchVote(Player vote) {
+	Object fObj = scope.get("setLynchVote", scope);
+	if (!(fObj instanceof Function)) {
+	    return;
+	}
+	Function f = (Function)fObj;
+	f.call(cx, scope, scope, new Object[]{vote});
     }
-    
-    public Role getRole() {
-	return role;
+
+    public Player getLynchVote() {
+	Function f = (Function) scope.get("getLynchVote", scope);
+	return (Player)f.call(cx, scope, scope, new Object[]{});
+    }
+
+    public int voteWeight() {
+	Function f = (Function) scope.get("voteWeight", scope);
+	return ((Double)f.call(cx, scope, scope, new Object[]{})).intValue();
+    }
+
+    public boolean canGameEnd(Game game) {
+	Function f = (Function) scope.get("canGameEnd", scope);
+	return (boolean)f.call(cx, scope, scope, new Object[]{});
+    }
+
+    public boolean isWinner(Game game) {
+	Function f = (Function) scope.get("isWinner", scope);
+	return (boolean)f.call(cx, scope, scope, new Object[]{});
     }
 
 }
