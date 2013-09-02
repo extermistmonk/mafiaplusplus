@@ -172,7 +172,11 @@ public class Player {
 
     public Player getLynchVote() {
 	Function f = (Function) scope.get("getLynchVote", scope);
-	return (Player)f.call(cx, scope, scope, new Object[]{});
+	Object result = f.call(cx, scope, scope, new Object[]{});
+	if (result instanceof Undefined) {
+	    return null;
+	}
+	return (Player)result;
     }
 
     public int voteWeight() {

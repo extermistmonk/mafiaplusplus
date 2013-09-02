@@ -10,18 +10,19 @@ import org.mozilla.javascript.*;
 
 public class Game {
 
-    Player[] players;
-    HashMap<Player, Integer> votes = new HashMap<Player, Integer>();
-    boolean day;
-    boolean started = false;
-    int cycles = 0;
-    String globalScript;
-    Context cx;
-    Scriptable globalScope;
+    private Player[] players;
+    private HashMap<Player, Integer> votes = new HashMap<Player, Integer>();
+    private boolean day;
+    private boolean started = false;
+    private int cycles = 0;
+    private String globalScript;
+    private Context cx;
+    private Scriptable globalScope;
 
     private ArrayList<PlayerLynchedListener> lynchListeners = new ArrayList<PlayerLynchedListener>();
     private ArrayList<PlayerKilledListener> killListeners = new ArrayList<PlayerKilledListener>();
     private ArrayList<GameOverListener> gameOverListeners = new ArrayList<GameOverListener>();
+    private ArrayList<SystemMessageListener> systemMessageListeners = new ArrayList<SystemMessageListener>();
 
     public Game(Player[] players, String globalScript) {
 	this.globalScript = globalScript;
@@ -196,6 +197,13 @@ public class Game {
 	return globalScope.get(varName, globalScope);
     }
 
+    public synchronized void addEventListener(SystemMessageListener listener) {
+	systemMessageListeners.add(listener);
+    }
+
+    public synchronized void removeEventListener(SystemMessageListener listener) {
+	systemMessageListeners.remove(listener);
+    }
     public synchronized void addEventListener(GameOverListener listener) {
 	gameOverListeners.add(listener);
     }
