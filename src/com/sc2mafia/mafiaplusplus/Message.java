@@ -1,4 +1,4 @@
-package com.sc2mafia.mafiaplusplus.core;
+package com.sc2mafia.mafiaplusplus;
 
 import java.util.ArrayList;
 
