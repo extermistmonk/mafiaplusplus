@@ -6,7 +6,7 @@ class SandboxNativeJavaObject extends NativeJavaObject {
     private static final long serialVersionUID = -9172561421760308930L;
 
     public SandboxNativeJavaObject(Scriptable scope, Object javaObject,
-	    Class staticType) {
+	    Class<?> staticType) {
 	super(scope, javaObject, staticType);
     }
 
@@ -23,13 +23,14 @@ class SandboxNativeJavaObject extends NativeJavaObject {
 class SandboxWrapFactory extends WrapFactory {
     @Override
     public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
-	    Object javaObject, Class staticType) {
+	    Object javaObject, Class<?> staticType) {
 	return new SandboxNativeJavaObject(scope, javaObject, staticType);
     }
 }
 
 public class SandboxContextFactory extends ContextFactory {
 
+    @SuppressWarnings("deprecation")
     static class SecureContext extends Context {
 	long startTime;
     }
