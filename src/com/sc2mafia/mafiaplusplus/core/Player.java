@@ -1,4 +1,4 @@
-package com.sc2mafia.mafia;
+package com.sc2mafia.mafiaplusplus.core;
 
 import org.mozilla.javascript.*;
 
@@ -7,15 +7,17 @@ public class Player {
     String script;
     Context cx;
     Scriptable scope;
+    String scriptName;
 
-    public Player(String script) {
+    public Player(String script, String scriptName) {
 	this.script = script;
+	this.scriptName = scriptName;
     }
 
-    void initRole(Context cx) {
+    void initRole(Context cx, Scriptable globalScope) {
 	this.cx = cx;
-	this.scope = cx.initStandardObjects();
-	this.cx.evaluateString(scope, script, "RoleScript", 1, null);
+	this.scope = cx.newObject(globalScope);
+	this.cx.evaluateString(scope, script, scriptName, 1, null);
 	Object fObj = scope.get("init", scope);
 	if (!(fObj instanceof Function)) {
 	    return;
@@ -115,23 +117,25 @@ public class Player {
     }
 
     public Player[] getTargets() {
-	Function f = (Function) scope.get("getTargets", scope);
-	NativeArray result = (NativeArray)f.call(cx, scope, scope, new Object[]{});
-	Player[] returnArray = new Player[(int) result.getLength()];
-	for (Object o : result.getIds()) {
-	    int index = (Integer) o;
-	    returnArray[index] = (Player) result.get(index);
+	Object fObj = scope.get("getTargets", scope);
+	if (!(fObj instanceof Function)) {
+	    return new Player[]{};
 	}
-	return returnArray;
+	Function f = (Function)fObj;
+	Object result = f.call(cx, scope, scope, new Object[]{});
+	if (result instanceof Player[]) {
+	    return (Player[]) result;
+	}
+	return new Player[]{};
     }
     
-    public void setTargets(Player[] targets) {
+    public void setTargets(Player[] targets, Game game) {
 	Object fObj = scope.get("setTargets", scope);
 	if (!(fObj instanceof Function)) {
 	    return;
 	}
 	Function f = (Function)fObj;
-	f.call(cx, scope, scope, new Object[]{});
+	f.call(cx, scope, scope, new Object[]{targets, game});
     }
 
     public void handleMessage(Message message, Game game) {
@@ -146,6 +150,9 @@ public class Player {
     public Player[] getKillers() {
 	Function f = (Function) scope.get("getKillers", scope);
 	NativeArray result = (NativeArray)f.call(cx, scope, scope, new Object[]{});
+	if (result.size() == 0) {
+	    return new Player[]{};
+	}
 	Player[] returnArray = new Player[(int) result.getLength()];
 	for (Object o : result.getIds()) {
 	    int index = (Integer) o;
@@ -165,7 +172,11 @@ public class Player {
 
     public Player getLynchVote() {
 	Function f = (Function) scope.get("getLynchVote", scope);
-	return (Player)f.call(cx, scope, scope, new Object[]{});
+	Object result = f.call(cx, scope, scope, new Object[]{});
+	if (result instanceof Undefined) {
+	    return null;
+	}
+	return (Player)result;
     }
 
     public int voteWeight() {
@@ -175,12 +186,16 @@ public class Player {
 
     public boolean canGameEnd(Game game) {
 	Function f = (Function) scope.get("canGameEnd", scope);
-	return (boolean)f.call(cx, scope, scope, new Object[]{});
+	return (boolean)f.call(cx, scope, scope, new Object[]{game});
     }
 
     public boolean isWinner(Game game) {
 	Function f = (Function) scope.get("isWinner", scope);
-	return (boolean)f.call(cx, scope, scope, new Object[]{});
+	return (boolean)f.call(cx, scope, scope, new Object[]{game});
+    }
+    
+    public Scriptable getJSObject() {
+	return scope;
     }
 
 }

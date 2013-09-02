@@ -1,4 +1,4 @@
-package com.sc2mafia.mafia;
+package com.sc2mafia.mafiaplusplus.core;
 
 import java.util.ArrayList;
 
@@ -10,6 +10,7 @@ public class Message {
     private ArrayList<Player> anonymousReceiverList;
     private ArrayList<Player> overrideList;
     boolean anonymous = false;
+    boolean killed = false;
     
     public Message(String message, Player sender, boolean anonymous) {
 	this.message = message;
@@ -55,6 +56,8 @@ public class Message {
         return anonymous;
     }
     
-    
+    public void kill() {
+	killed = true;
+    }
     
 }

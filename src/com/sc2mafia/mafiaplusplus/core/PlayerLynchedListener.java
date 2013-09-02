@@ -1,4 +1,4 @@
-package com.sc2mafia.mafiaplusplus;
+package com.sc2mafia.mafiaplusplus.core;
 
 public interface PlayerLynchedListener {
 
