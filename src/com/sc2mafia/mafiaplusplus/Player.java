@@ -4,10 +4,10 @@ import org.mozilla.javascript.*;
 
 public class Player {
 
-    String script;
-    Context cx;
-    Scriptable scope;
-    String scriptName;
+    private String script;
+    private Context cx;
+    private Scriptable scope;
+    private String scriptName;
 
     public Player(String script, String scriptName) {
 	this.script = script;
