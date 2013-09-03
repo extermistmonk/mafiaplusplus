@@ -9,8 +9,8 @@ public class Message {
     private ArrayList<Player> receiverList;
     private ArrayList<Player> anonymousReceiverList;
     private ArrayList<Player> overrideList;
-    boolean anonymous = false;
-    boolean killed = false;
+    private boolean anonymous = false;
+    private boolean killed = false;
     
     public Message(String message, Player sender, boolean anonymous) {
 	this.message = message;
@@ -54,6 +54,10 @@ public class Message {
 
     public boolean isAnonymous() {
         return anonymous;
+    }
+    
+    public boolean isKilled() {
+	return killed;
     }
     
     public void kill() {
