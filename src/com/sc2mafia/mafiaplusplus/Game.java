@@ -58,7 +58,7 @@ public class Game {
 	cx = Context.enter();
 	cx.setClassShutter(new ClassShutter() {
 	    public boolean visibleToScripts(String className) {
-		if (className.startsWith("com.sc2mafia.mafia.")
+		if (className.startsWith("com.sc2mafia.mafiaplusplus.")
 			|| className.startsWith("java.lang.")) {
 		    return true;
 		}
