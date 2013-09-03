@@ -8,13 +8,7 @@ import java.util.HashMap;
 
 import org.mozilla.javascript.*;
 
-import com.sc2mafia.mafiaplusplus.event.GameOverEvent;
-import com.sc2mafia.mafiaplusplus.event.GameOverListener;
-import com.sc2mafia.mafiaplusplus.event.PlayerKilledEvent;
-import com.sc2mafia.mafiaplusplus.event.PlayerKilledListener;
-import com.sc2mafia.mafiaplusplus.event.PlayerLynchedEvent;
-import com.sc2mafia.mafiaplusplus.event.PlayerLynchedListener;
-import com.sc2mafia.mafiaplusplus.event.SystemMessageListener;
+import com.sc2mafia.mafiaplusplus.event.*;
 
 public class Game {
 
@@ -190,9 +184,11 @@ public class Game {
     	}
     }
     
-    //not implemented
     public void sendSystemMessage(String message, Player[] players) {
-	System.out.println(message);
+	SystemMessageEvent event = new SystemMessageEvent(this, players, message);;
+	for (SystemMessageListener l : systemMessageListeners) {
+    	    l.handleSystemMessageEvent(event);
+    	}
     }
     
     public void processMessage(Message message) {
