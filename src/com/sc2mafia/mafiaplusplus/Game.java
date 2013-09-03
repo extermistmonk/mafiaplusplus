@@ -42,7 +42,7 @@ public class Game {
 		if (className.startsWith("com.sc2mafia.mafia.") || className.startsWith("java.lang.")) {
 		    return true;
 		}
-		return true;
+		return false;
 	    }
 	});
 	globalScope = new ImporterTopLevel(cx); 
