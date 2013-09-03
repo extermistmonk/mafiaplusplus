@@ -178,7 +178,7 @@ public class Game {
 		winners.add(p);
 	    }
 	}
-	GameOverEvent event = new GameOverEvent(this, winners.toArray((new Player[winners.size()])));;
+	GameOverEvent event = new GameOverEvent(this, winners.toArray(new Player[winners.size()]));;
     	for (GameOverListener l : gameOverListeners) {
     	    l.handleGameOverEvent(event);
     	}
@@ -197,6 +197,18 @@ public class Game {
 	}
     }
     
+    public boolean isDay() {
+	return day;
+    }
+
+    public boolean isStarted() {
+	return started;
+    }
+
+    public int getCycles() {
+	return cycles;
+    }
+
     Object getGlobalScriptVar(String varName) {
 	return globalScope.get(varName, globalScope);
     }
@@ -230,18 +242,6 @@ public class Game {
 
     public synchronized void removeEventListener(PlayerKilledListener listener) {
 	killListeners.remove(listener);
-    }
-
-    public boolean isDay() {
-	return day;
-    }
-
-    public boolean isStarted() {
-	return started;
-    }
-
-    public int getCycles() {
-	return cycles;
     }
 
 }
