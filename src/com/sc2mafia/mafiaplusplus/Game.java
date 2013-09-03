@@ -33,7 +33,7 @@ public class Game {
     }
     
     public void startGame() {
-	ContextFactory.initGlobal(new SandboxContextFactory());
+	ContextFactory.initGlobal(new SandboxedContextFactory());
 	cx = Context.enter();
 	cx.setClassShutter(new ClassShutter() {
 	    public boolean visibleToScripts(String className) {

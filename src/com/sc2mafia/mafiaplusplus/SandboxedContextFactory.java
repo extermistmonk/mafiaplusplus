@@ -2,33 +2,7 @@ package com.sc2mafia.mafiaplusplus;
 
 import org.mozilla.javascript.*;
 
-class SandboxNativeJavaObject extends NativeJavaObject {
-    private static final long serialVersionUID = -9172561421760308930L;
-
-    public SandboxNativeJavaObject(Scriptable scope, Object javaObject,
-	    Class<?> staticType) {
-	super(scope, javaObject, staticType);
-    }
-
-    @Override
-    public Object get(String name, Scriptable start) {
-	if (name.equals("getClass")) {
-	    return NOT_FOUND;
-	}
-
-	return super.get(name, start);
-    }
-}
-
-class SandboxWrapFactory extends WrapFactory {
-    @Override
-    public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
-	    Object javaObject, Class<?> staticType) {
-	return new SandboxNativeJavaObject(scope, javaObject, staticType);
-    }
-}
-
-public class SandboxContextFactory extends ContextFactory {
+public class SandboxedContextFactory extends ContextFactory {
 
     @SuppressWarnings("deprecation")
     static class SecureContext extends Context {
@@ -58,5 +32,31 @@ public class SandboxContextFactory extends ContextFactory {
 	mcx.startTime = System.currentTimeMillis();
 
 	return super.doTopCall(callable, cx, scope, thisObj, args);
+    }
+}
+
+class SandboxedNativeJavaObject extends NativeJavaObject {
+    private static final long serialVersionUID = -9172561421760308930L;
+
+    public SandboxedNativeJavaObject(Scriptable scope, Object javaObject,
+	    Class<?> staticType) {
+	super(scope, javaObject, staticType);
+    }
+
+    @Override
+    public Object get(String name, Scriptable start) {
+	if (name.equals("getClass")) {
+	    return NOT_FOUND;
+	}
+
+	return super.get(name, start);
+    }
+}
+
+class SandboxedWrapFactory extends WrapFactory {
+    @Override
+    public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
+	    Object javaObject, Class<?> staticType) {
+	return new SandboxedNativeJavaObject(scope, javaObject, staticType);
     }
 }
