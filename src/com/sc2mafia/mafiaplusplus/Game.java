@@ -92,6 +92,7 @@ public class Game {
 	for (Player p : players) {
 	    p.nightStart(this);
 	}
+	checkWins();
     }
 
     /**
@@ -103,6 +104,7 @@ public class Game {
 	for (Player p : players) {
 	    p.nightEnd(this);
 	}
+	checkWins();
     }
 
     /**
