@@ -1,15 +1,17 @@
-package com.sc2mafia.mafiaplusplus;
+package com.sc2mafia.mafiaplusplus.event;
 
 import java.util.EventObject;
 
-public class SystemMessage extends EventObject {
+import com.sc2mafia.mafiaplusplus.Player;
+
+public class SystemMessageEvent extends EventObject {
 
     private static final long serialVersionUID = -7234287211786587126L;
     
     Player[] receivers;
     String message;
     
-    public SystemMessage(Object source, Player[] receivers, String message) {
+    public SystemMessageEvent(Object source, Player[] receivers, String message) {
 	super(source);
 	this.receivers = receivers;
 	this.message = message;

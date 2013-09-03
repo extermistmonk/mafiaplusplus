@@ -1,14 +1,17 @@
-package com.sc2mafia.mafiaplusplus;
+package com.sc2mafia.mafiaplusplus.event;
 
 import java.util.EventObject;
 
-public class GameOver extends EventObject {
+import com.sc2mafia.mafiaplusplus.Game;
+import com.sc2mafia.mafiaplusplus.Player;
+
+public class GameOverEvent extends EventObject {
 
     private static final long serialVersionUID = -3828864525074040651L;
     
     Player[] winners;
 
-    public GameOver(Game source, Player[] winners) {
+    public GameOverEvent(Game source, Player[] winners) {
 	super(source);
 	this.winners = winners;
     }

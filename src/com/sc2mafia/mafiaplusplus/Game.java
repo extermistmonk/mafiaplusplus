@@ -8,6 +8,14 @@ import java.util.HashMap;
 
 import org.mozilla.javascript.*;
 
+import com.sc2mafia.mafiaplusplus.event.GameOverEvent;
+import com.sc2mafia.mafiaplusplus.event.GameOverListener;
+import com.sc2mafia.mafiaplusplus.event.PlayerKilledEvent;
+import com.sc2mafia.mafiaplusplus.event.PlayerKilledListener;
+import com.sc2mafia.mafiaplusplus.event.PlayerLynchedEvent;
+import com.sc2mafia.mafiaplusplus.event.PlayerLynchedListener;
+import com.sc2mafia.mafiaplusplus.event.SystemMessageListener;
+
 public class Game {
 
     private Player[] players;
@@ -116,7 +124,7 @@ public class Game {
     }
 
     void playerKilled(Player player, Player[] killers) {
-	PlayerKilled event = new PlayerKilled(this, player, killers);
+	PlayerKilledEvent event = new PlayerKilledEvent(this, player, killers);
 	for (PlayerKilledListener l : killListeners) {
 	    l.handlePlayerKilledEvent(event);
 	}
@@ -124,7 +132,7 @@ public class Game {
 
     private void lynch(Player player) {
 	player.lynched(this);
-	PlayerLynched event = new PlayerLynched(this, player);
+	PlayerLynchedEvent event = new PlayerLynchedEvent(this, player);
 	for (PlayerLynchedListener l : lynchListeners) {
 	    l.handlePlayerLynchedEvent(event);
 	}
@@ -176,7 +184,7 @@ public class Game {
 		winners.add(p);
 	    }
 	}
-	GameOver event = new GameOver(this, winners.toArray((new Player[winners.size()])));;
+	GameOverEvent event = new GameOverEvent(this, winners.toArray((new Player[winners.size()])));;
     	for (GameOverListener l : gameOverListeners) {
     	    l.handleGameOverEvent(event);
     	}
