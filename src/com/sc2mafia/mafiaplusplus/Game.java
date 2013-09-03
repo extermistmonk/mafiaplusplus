@@ -11,7 +11,7 @@ import org.mozilla.javascript.*;
 import com.sc2mafia.mafiaplusplus.event.*;
 
 /**
- * The Class Game. This class controls the entire game, including day/night
+ * This class controls the entire Mafia game, including day/night
  * cycles, lynching, handling messages, as well as handling players and calling
  * relevant methods
  */
