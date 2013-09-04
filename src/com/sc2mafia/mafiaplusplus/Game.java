@@ -11,9 +11,9 @@ import org.mozilla.javascript.*;
 import com.sc2mafia.mafiaplusplus.event.*;
 
 /**
- * This class controls the entire Mafia game, including day/night
- * cycles, lynching, handling messages, as well as handling players and calling
- * relevant methods
+ * This class controls the entire Mafia game, including day/night cycles,
+ * lynching, handling messages, as well as handling players and calling relevant
+ * methods
  */
 public class Game {
 
@@ -22,7 +22,6 @@ public class Game {
     private boolean day;
     private boolean started = false;
     private int cycles = 0;
-    private String globalScript;
     private Context cx;
     private Scriptable globalScope;
 
@@ -32,7 +31,8 @@ public class Game {
     private ArrayList<SystemMessageListener> systemMessageListeners = new ArrayList<SystemMessageListener>();
 
     /**
-     * Instantiates a new game.
+     * Instantiates a new game. This will initialise the player array, run the
+     * global script, and run initRole on all players.
      * 
      * @param players
      *            the players to initiate the game with
@@ -41,19 +41,10 @@ public class Game {
      *            shared with all players, as well as game settings
      */
     public Game(Player[] players, String globalScript) {
-	this.globalScript = globalScript;
 	this.players = players.clone();
 	for (int i = 0; i < players.length; i++) {
 	    votes.put(players[i], 0);
 	}
-    }
-
-    /**
-     * Starts the game. This will run the global script and initialises each
-     * player, then starts night or day depending on the nightStart variable in
-     * the global script. By default the game starts at day.
-     */
-    public void startGame() {
 	ContextFactory.initGlobal(new SandboxedContextFactory());
 	cx = Context.enter();
 	cx.setClassShutter(new ClassShutter() {
@@ -71,6 +62,13 @@ public class Game {
 	for (Player p : players) {
 	    p.initRole(cx, globalScope);
 	}
+    }
+
+    /**
+     * Starts the game. This starts night or day depending on the nightStart
+     * variable in the global script. By default the game starts at day.
+     */
+    public void startGame() {
 	started = true;
 	if (getGlobalScriptVar("nightStart") instanceof Boolean
 		&& (Boolean) getGlobalScriptVar("nightStart")) {
@@ -332,7 +330,7 @@ public class Game {
      * @return an Object containing the value, or NOT_FOUND if the variable was
      *         not found
      */
-    Object getGlobalScriptVar(String varName) {
+    public Object getGlobalScriptVar(String varName) {
 	return globalScope.get(varName, globalScope);
     }
 
