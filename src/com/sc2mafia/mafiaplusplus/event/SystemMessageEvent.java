@@ -6,7 +6,7 @@ import com.sc2mafia.mafiaplusplus.Player;
 
 public class SystemMessageEvent extends EventObject {
 
-    private static final long serialVersionUID = -7234287211786587126L;
+    private static final long serialVersionUID = -4971767742918062990L;
     
     Player[] receivers;
     String message;
