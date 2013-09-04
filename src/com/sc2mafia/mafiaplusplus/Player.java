@@ -45,7 +45,7 @@ public class Player {
     void initRole(Context cx, Scriptable globalScope) {
 	this.cx = cx;
 	this.scope = cx.newObject(globalScope);
-	this.cx.evaluateString(scope, script, scriptName, 1, null);
+	cx.evaluateString(scope, script, scriptName, 1, null);
 	Object fObj = scope.get("init", scope);
 	if (!(fObj instanceof Function)) {
 	    return;

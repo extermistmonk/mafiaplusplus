@@ -22,7 +22,6 @@ public class Game {
     private boolean day;
     private boolean started = false;
     private int cycles = 0;
-    private Context cx;
     private Scriptable globalScope;
 
     private ArrayList<PlayerLynchedListener> lynchListeners = new ArrayList<PlayerLynchedListener>();
@@ -47,18 +46,9 @@ public class Game {
 	    votes.put(players[i], 0);
 	}
 	ContextFactory.initGlobal(new SandboxedContextFactory());
-	cx = Context.enter();
-	cx.setClassShutter(new ClassShutter() {
-	    public boolean visibleToScripts(String className) {
-		if (className.startsWith("com.sc2mafia.mafiaplusplus.")
-			|| className.startsWith("java.lang.")) {
-		    return true;
-		}
-		return false;
-	    }
-	});
+	Context cx = createContext();
 	globalScope = new ImporterTopLevel(cx);
-	this.cx.evaluateString(globalScope, globalScript, "GlobalScript", 1,
+	cx.evaluateString(globalScope, globalScript, "GlobalScript", 1,
 		null);
 	for (Player p : players) {
 	    p.initRole(cx, globalScope);
@@ -92,7 +82,8 @@ public class Game {
 	}
 	checkWins();
 	for (CycleChangedListener l : cycleChangedListeners) {
-	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.NIGHTSTART));
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this,
+		    CycleChangedEvent.Cycle.NIGHTSTART));
 	}
     }
 
@@ -107,7 +98,8 @@ public class Game {
 	}
 	checkWins();
 	for (CycleChangedListener l : cycleChangedListeners) {
-	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.NIGHTEND));
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this,
+		    CycleChangedEvent.Cycle.NIGHTEND));
 	}
     }
 
@@ -125,7 +117,8 @@ public class Game {
 	}
 	checkWins();
 	for (CycleChangedListener l : cycleChangedListeners) {
-	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.DAYSTART));
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this,
+		    CycleChangedEvent.Cycle.DAYSTART));
 	}
     }
 
@@ -141,7 +134,8 @@ public class Game {
 	}
 	checkWins();
 	for (CycleChangedListener l : cycleChangedListeners) {
-	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.DAYEND));
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this,
+		    CycleChangedEvent.Cycle.DAYEND));
 	}
     }
 
@@ -343,6 +337,28 @@ public class Game {
      */
     public Object getGlobalScriptVar(String varName) {
 	return globalScope.get(varName, globalScope);
+    }
+
+    /**
+     * Creates a properly set up JavaScript Context for the current thread. This
+     * method must be called before running any other game or player methods in
+     * a new thread.
+     * 
+     * @return the Context that was created
+     * 
+     */
+    public static Context createContext() {
+	Context cx = Context.enter();
+	cx.setClassShutter(new ClassShutter() {
+	    public boolean visibleToScripts(String className) {
+		if (className.startsWith("com.sc2mafia.mafiaplusplus.")
+			|| className.startsWith("java.lang.")) {
+		    return true;
+		}
+		return true;
+	    }
+	});
+	return cx;
     }
 
     /**
