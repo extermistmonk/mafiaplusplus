@@ -29,6 +29,7 @@ public class Game {
     private ArrayList<PlayerKilledListener> killListeners = new ArrayList<PlayerKilledListener>();
     private ArrayList<GameOverListener> gameOverListeners = new ArrayList<GameOverListener>();
     private ArrayList<SystemMessageListener> systemMessageListeners = new ArrayList<SystemMessageListener>();
+    private ArrayList<CycleChangedListener> cycleChangedListeners = new ArrayList<CycleChangedListener>();
 
     /**
      * Instantiates a new game. This will initialise the player array, run the
@@ -76,7 +77,6 @@ public class Game {
 	} else {
 	    startDay();
 	}
-
     }
 
     /**
@@ -91,6 +91,9 @@ public class Game {
 	    p.nightStart(this);
 	}
 	checkWins();
+	for (CycleChangedListener l : cycleChangedListeners) {
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.NIGHTSTART));
+	}
     }
 
     /**
@@ -103,6 +106,9 @@ public class Game {
 	    p.nightEnd(this);
 	}
 	checkWins();
+	for (CycleChangedListener l : cycleChangedListeners) {
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.NIGHTEND));
+	}
     }
 
     /**
@@ -118,6 +124,9 @@ public class Game {
 	    p.dayStart(this);
 	}
 	checkWins();
+	for (CycleChangedListener l : cycleChangedListeners) {
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.DAYSTART));
+	}
     }
 
     /**
@@ -131,6 +140,9 @@ public class Game {
 	    p.dayEnd(this);
 	}
 	checkWins();
+	for (CycleChangedListener l : cycleChangedListeners) {
+	    l.handleCycleChangedEvent(new CycleChangedEvent(this, CycleChangedEvent.Cycle.DAYEND));
+	}
     }
 
     /**
@@ -255,7 +267,6 @@ public class Game {
 	}
 	GameOverEvent event = new GameOverEvent(this,
 		winners.toArray(new Player[winners.size()]));
-	;
 	for (GameOverListener l : gameOverListeners) {
 	    l.handleGameOverEvent(event);
 	}
@@ -412,6 +423,26 @@ public class Game {
      */
     public synchronized void removeEventListener(PlayerKilledListener listener) {
 	killListeners.remove(listener);
+    }
+
+    /**
+     * Adds the CycleChangedListener to listen for when the game cycle changes.
+     * 
+     * @param listener
+     *            the listener to add
+     */
+    public synchronized void addEventListener(CycleChangedListener listener) {
+	cycleChangedListeners.add(listener);
+    }
+
+    /**
+     * Removes the CycleChangedListener.
+     * 
+     * @param listener
+     *            the listener to remove
+     */
+    public synchronized void removeEventListener(CycleChangedListener listener) {
+	cycleChangedListeners.remove(listener);
     }
 
 }
