@@ -1,0 +1,8 @@
+bin
+html
+lib
+roles
+src/test
+.project
+.classpath
+.settings
