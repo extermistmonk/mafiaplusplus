@@ -10,7 +10,11 @@ Creating roles requires a decent knowledge of JavaScript. Roles are written with
 ## Notes
 This project is far from complete. The specifications and methods may change at any time, so early adopters should be prepared to modify their roles accordingly. Consider the project volatile, and don't invest too much of your time in coding for it.
 
+## Building
+I haven't added an actual build script or anything yet, I might make this a Maven project someday, though. It depends on Rhino, though.
+
 ## Todo
 - [ ] Add some way of checking that a role script is valid before creating the Player
 - [ ] \(Possibly?\) move lynching to the global script, to allow games to have control over that aspect
 - [ ] Write an actual server
+- [ ] Add a proper build script (Maven or Ant or something)
