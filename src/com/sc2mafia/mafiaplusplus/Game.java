@@ -355,7 +355,7 @@ public class Game {
 			|| className.startsWith("java.lang.")) {
 		    return true;
 		}
-		return false;
+		return true;
 	    }
 	});
 	return cx;
