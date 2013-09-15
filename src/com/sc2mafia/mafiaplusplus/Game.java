@@ -40,18 +40,29 @@ public class Game {
      *            the global JavaScript file, containing variables and methods
      *            shared with all players, as well as game settings
      */
-    public Game(Player[] players, String globalScript) {
-	this.players = players.clone();
-	for (int i = 0; i < players.length; i++) {
-	    votes.put(players[i], 0);
-	}
+    public Game(String[] roleScripts, String[] roleNames, String globalScript) {
 	ContextFactory.initGlobal(new SandboxedContextFactory());
 	Context cx = createContext();
 	globalScope = new ImporterTopLevel(cx);
 	cx.evaluateString(globalScope, globalScript, "GlobalScript", 1,
 		null);
-	for (Player p : players) {
-	    p.initRole(cx, globalScope);
+	for (int i = 0; i < roleScripts.length; i++) {
+	    cx.evaluateString(globalScope, roleScripts[i], roleNames[i], 1,
+		    null);
+	}
+	Function f = (Function) globalScope.get("getRoleList", globalScope);
+	NativeArray result = (NativeArray) f.call(cx, globalScope, globalScope, new Object[] {});
+	if (result.size() == 0) {
+	    this.players = new Player[] {};
+	}
+	Player[] players = new Player[(int) result.getLength()];
+	for (Object o : result.getIds()) {
+	    int index = (Integer) o;
+	    players[index] = new Player(cx, (Scriptable) result.get(index));
+	}
+	this.players = players;
+	for (int i = 0; i < players.length; i++) {
+	    votes.put(players[i], 0);
 	}
     }
 

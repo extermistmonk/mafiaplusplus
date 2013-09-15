@@ -12,10 +12,8 @@ import org.mozilla.javascript.*;
  */
 public class Player {
 
-    private String script;
     private Context cx;
     private Scriptable scope;
-    private String scriptName;
 
     /**
      * Instantiates a new player. This does not initialise the role, and using
@@ -26,26 +24,9 @@ public class Player {
      * @param scriptName
      *            the name of the script, used to pinpoint the source of errors
      */
-    public Player(String script, String scriptName) {
-	this.script = script;
-	this.scriptName = scriptName;
-    }
-
-    /**
-     * Initialises the role. This runs the role script once, calls the
-     * init(player) function in the role script, and initialises the JavaScript
-     * context so that functions can be called. Roles should record the Player
-     * object passed in this function, so that they can use it later.
-     * 
-     * @param cx
-     *            the JavaScript context
-     * @param globalScope
-     *            the global script scope
-     */
-    void initRole(Context cx, Scriptable globalScope) {
+    public Player(Context cx, Scriptable scope) {
 	this.cx = cx;
-	this.scope = cx.newObject(globalScope);
-	cx.evaluateString(scope, script, scriptName, 1, null);
+	this.scope = scope;
 	Object fObj = scope.get("init", scope);
 	if (!(fObj instanceof Function)) {
 	    return;
@@ -62,7 +43,8 @@ public class Player {
      * @return the role name
      */
     public String getRoleName() {
-	return (String) scope.get("roleName", scope);
+	Function f = (Function) scope.get("getRoleName", scope);
+	return (String) f.call(cx, scope, scope, new Object[] {});
     }
 
     /**
@@ -73,7 +55,8 @@ public class Player {
      * @return the alignment
      */
     public String getAlignment() {
-	return (String) scope.get("alignment", scope);
+	Function f = (Function) scope.get("getAlignment", scope);
+	return (String) f.call(cx, scope, scope, new Object[] {});
     }
 
     /**

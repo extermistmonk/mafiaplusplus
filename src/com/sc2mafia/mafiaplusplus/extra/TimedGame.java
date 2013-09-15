@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import org.mozilla.javascript.UniqueTag;
 
 import com.sc2mafia.mafiaplusplus.Game;
-import com.sc2mafia.mafiaplusplus.Player;
 
 /**
  * This class provides a lightweight wrapper around the Game class that
@@ -27,8 +26,8 @@ public class TimedGame extends Game {
      *            the global JavaScript file, containing variables and methods
      *            shared with all players, as well as game settings
      */
-    public TimedGame(Player[] players, String globalScript) {
-	super(players, globalScript);
+    public TimedGame(String[] roleScripts, String[] roleNames, String globalScript) {
+	super(roleScripts, roleNames, globalScript);
     }
 
     /**
