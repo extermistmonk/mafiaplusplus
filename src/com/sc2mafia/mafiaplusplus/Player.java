@@ -236,7 +236,9 @@ public class Player {
 
     /**
      * Gets the targets of this player. The context of this is up to the role to
-     * decide, but in general it refers to the role's night targets.
+     * decide, but in general it refers to the role's night targets. In general,
+     * a target is any player that the role is "visiting" (for example, a vote
+     * doesn't count as a target, but a nightkill does.
      * 
      * This function may be implemented in the role script.
      * 
@@ -257,22 +259,25 @@ public class Player {
     }
 
     /**
-     * Sets the targets of the player.
+     * Sets the target of the player corresponding to the target type id, as
+     * specified when the role call addTargetType in the game.
      * 
      * This function may be implemented in the role script.
      * 
      * @param targets
      *            the targets
+     * @param targetid
+     *            the target type id
      * @param game
      *            the game instance the player belongs to
      */
-    public void setTargets(Player[] targets, Game game) {
+    public void setTarget(Player target, int targetid, Game game) {
 	Object fObj = scope.get("setTargets", scope);
 	if (!(fObj instanceof Function)) {
 	    return;
 	}
 	Function f = (Function) fObj;
-	f.call(cx, scope, scope, new Object[] { targets, game });
+	f.call(cx, scope, scope, new Object[] { target, targetid, game });
     }
 
     /**

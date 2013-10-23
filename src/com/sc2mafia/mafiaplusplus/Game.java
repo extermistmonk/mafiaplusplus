@@ -29,6 +29,7 @@ public class Game {
     private ArrayList<GameOverListener> gameOverListeners = new ArrayList<GameOverListener>();
     private ArrayList<SystemMessageListener> systemMessageListeners = new ArrayList<SystemMessageListener>();
     private ArrayList<CycleChangedListener> cycleChangedListeners = new ArrayList<CycleChangedListener>();
+    private ArrayList<TargetTypesChangedListener> targetTypesChangedListeners = new ArrayList<TargetTypesChangedListener>();
 
     /**
      * Instantiates a new game. This will initialise the player array, run the
@@ -289,7 +290,6 @@ public class Game {
     public void sendSystemMessage(String message, Player[] players) {
 	SystemMessageEvent event = new SystemMessageEvent(this, players,
 		message);
-	;
 	for (SystemMessageListener l : systemMessageListeners) {
 	    l.handleSystemMessageEvent(event);
 	}
@@ -306,6 +306,13 @@ public class Game {
     public void processMessage(Message message) {
 	for (Player p : getPlayers()) {
 	    p.handleMessage(message, this);
+	}
+    }
+    
+    public void changeTargetTypes(String[] types, Player[] players) {
+	TargetTypesChangedEvent event = new TargetTypesChangedEvent(this, types, players);
+	for (TargetTypesChangedListener l : targetTypesChangedListeners) {
+	    l.handleCycleChangedEvent(event);
 	}
     }
 
@@ -472,4 +479,12 @@ public class Game {
 	cycleChangedListeners.remove(listener);
     }
 
+    public synchronized void addEventListener(TargetTypesChangedListener listener) {
+	targetTypesChangedListeners.add(listener);
+    }
+    
+    public synchronized void removeEventListener(TargetTypesChangedListener listener) {
+	targetTypesChangedListeners.remove(listener);
+    }
+    
 }
